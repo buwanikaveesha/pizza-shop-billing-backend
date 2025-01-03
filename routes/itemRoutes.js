@@ -62,4 +62,14 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.get('/items', async (req, res) => {
+    const { name } = req.query;
+    try {
+        const items = await Item.find({ name: { $regex: name, $options: 'i' } }); // Case-insensitive search
+        res.json(items);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
