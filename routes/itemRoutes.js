@@ -1,6 +1,5 @@
 const express = require('express');
 const Item = require('../models/Item');
-
 const router = express.Router();
 
 // GET all items
@@ -13,7 +12,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST add a new item
+// POST add a new item (for items)
 router.post('/', async (req, res) => {
     const { name, price } = req.body;
 
@@ -62,14 +61,16 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Route to get items based on a search query (e.g., by name)
 router.get('/items', async (req, res) => {
     const { name } = req.query;
     try {
-        const items = await Item.find({ name: { $regex: name, $options: 'i' } }); // Case-insensitive search
+        const items = await Item.find({ name: { $regex: name, $options: 'i' } });
         res.json(items);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 module.exports = router;
