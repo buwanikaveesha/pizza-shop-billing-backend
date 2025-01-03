@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const BillItem = require('../models/BillItem'); // Ensure this path is correct
+const BillItem = require('../models/BillItem');
+const mongoose = require('mongoose');
 
 // POST: Add a new bill item
 router.post('/', async (req, res) => {
@@ -36,5 +37,31 @@ router.post('/', async (req, res) => {
         res.status(500).json({ message: "Error saving bill item", error: error.message });
     }
 });
+
+
+// Delete a bill item by ID
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid item ID format' });
+    }
+
+    try {
+        const billItem = await BillItem.findByIdAndDelete(id);
+        if (!billItem) {
+            return res.status(404).json({ error: 'Bill item not found' });
+        }
+
+        res.status(200).json({ message: 'Item deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting bill item:', error);
+        res.status(500).json({ error: 'Failed to delete item' });
+    }
+});
+
+
+
 
 module.exports = router;
